@@ -23,19 +23,36 @@ class NameSearch(EasyFrame):
 
     def search(self):
         """Searches lists if anything is typed in search text areas."""
-        boyNames = open("./BoyNames.txt", 'r')
-        girlNames = open("./GirlNames.txt", 'r')
-        boyList = boyNames.read().splitlines()
-        girlList = girlNames.read().splitlines()
+        self.outputArea.setText("")
         boyName = self.boyName.getText()
-        count = 0
-        while count < len(boyList):
-            if boyList[count] == boyName:
-                self.outputArea["state"] = "normal"
-                self.outputArea.setText(boyName + " is the most popular name")
-                break
-            else:
+        girlName = self.girlName.getText()
+
+        if boyName != "":
+            boyNames = open("./BoyNames.txt", 'r')
+            boyList = boyNames.read().splitlines()
+            count=0
+            while count < len(boyList):
+                if boyList[count] == boyName:
+                    self.outputArea["state"] = "normal"
+                    self.outputArea.appendText(boyName + " is one of the 200 most popular boy's names." + "\n")
+                    break
+                # else:
                 count += 1
+                if count >= len(boyList):
+                    self.outputArea.appendText(boyName + " is not one of the most popular boy's names." + "\n")
+
+        if girlName != "":
+            girlNames = open("./Girlnames.txt", 'r')
+            girlList = girlNames.read().splitlines()
+            count=0
+            while count < len(girlList):
+                if girlList[count] == girlName:
+                    self.outputArea["state"] = "normal"
+                    self.outputArea.appendText(girlName + " is one of the 200 most popular girl's names." + "\n")
+                    break
+                count += 1
+                if count >= len(girlList):
+                    self.outputArea.appendText(girlName + " is not one of the most popular girl's names." + "\n")
 
 def main():
     NameSearch().mainloop()
