@@ -14,7 +14,6 @@ class AddressBook(EasyFrame):
     #set up dictionary and class variables for pickle.
     contactDict = {}
 
-
     def __init__(self):
         """Sets up window and widgets."""
         EasyFrame.__init__(self, "Email Address Book")
@@ -26,12 +25,12 @@ class AddressBook(EasyFrame):
         self.addName = self.addTextField(text="", row=1, column=2)
         self.addLabel(text="Enter Email:", row=1, column=3)
         self.addEmail = self.addTextField(text="", row=1, column=4)
-        self.editButton = self.addButton(text="Edit Contact", row=2, column=0)
+        self.editButton = self.addButton(text="Edit Contact", row=2, column=0, command=self.editAddress)
         self.addLabel(text="Enter name of contact to edit:", row=2, column=1)
         self.nameToEdit = self.addTextField(text="", row=2, column=2)
         self.addLabel(text="New Email Address:", row=2, column=3)
         self.newEmail = self.addTextField(text="", row=2, column=4)
-        self.deleteButton = self.addButton(text="Delete Contact", row=3, column=0)
+        self.deleteButton = self.addButton(text="Delete Contact", row=3, column=0, command=self.deleteAddress)
         self.addLabel(text="Enter name to delete:", row=3, column=1)
         self.nameToDelete = self.addTextField(text="", row=3, column=2)
         self.saveAndQuit = self.addButton(text="Save and Quit", row=4, column=0, command=self.save)
@@ -47,7 +46,8 @@ class AddressBook(EasyFrame):
             for k in AddressBook.contactDict:
                 if searchName == k:
                     self.outputArea["state"] = "normal"
-                    self.outputArea.appendText(AddressBook.contactDict[k])
+                    self.outputArea.appendText(searchName + "'s email is " + AddressBook.contactDict[k])
+                    self.nameSearch.setText("")
                     return
             self.outputArea["state"] = "normal"
             self.outputArea.appendText("Name not found.")
@@ -55,6 +55,7 @@ class AddressBook(EasyFrame):
     def addAddress(self):
         newName = self.addName.getText()
         newEmail = self.addEmail.getText()
+        self.outputArea.setText("")
         if newName != "" and newEmail != "":
             AddressBook.contactDict[newName] = newEmail
             pickleOut = open("emails.dat", "wb")
@@ -68,10 +69,33 @@ class AddressBook(EasyFrame):
             self.outputArea.appendText("Provide neccessary info.")
             
     def editAddress(self):
-        pass
+        name = self.nameToEdit.getText()
+        emailEdit = self.newEmail.getText()
+        self.outputArea.setText("")
+        if name != "" and emailEdit != "":
+            for k in AddressBook.contactDict:
+                if name == k:
+                    AddressBook.contactDict[k] = emailEdit
+                    self.outputArea.appendText("Contact updated")
+                    pickleOut = open("emails.dat", "wb")
+                    pickle.dump(AddressBook.contactDict, pickleOut)
+                    pickleOut.close()
+                    return
+            self.outputArea.appendText("Name not found.")
 
     def deleteAddress(self):
-        pass
+        delete = self.nameToDelete.getText()
+        self.outputArea.setText("")
+        if delete != "":
+            for k in AddressBook.contactDict:
+                if delete == k:
+                    del AddressBook.contactDict[k]
+                    pickleOut = open("emails.dat", "wb")
+                    pickle.dump(AddressBook.contactDict, pickleOut)
+                    pickleOut.close()
+                    self.outputArea.appendText("Contact deleted.")
+                    return
+            self.outputArea.appendText("Name not found.")
 
     def save(self):
         pickleOut = open("emails.dat", "wb")
