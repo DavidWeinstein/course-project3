@@ -40,17 +40,21 @@ class AddressBook(EasyFrame):
     def search(self):
         searchName = self.nameSearch.getText()
         self.outputArea.setText("")
-        if searchName != "":
-            pickleIn = open("emails.dat", "rb")
-            AddressBook.contactDict = pickle.load(pickleIn)
-            for k in AddressBook.contactDict:
-                if searchName == k:
-                    self.outputArea["state"] = "normal"
-                    self.outputArea.appendText(searchName + "'s email is " + AddressBook.contactDict[k])
-                    self.nameSearch.setText("")
-                    return
-            self.outputArea["state"] = "normal"
+        try:
+            if searchName != "":
+                pickleIn = open("emails.dat", "rb")
+                AddressBook.contactDict = pickle.load(pickleIn)
+                for k in AddressBook.contactDict:
+                    if searchName == k:
+                        self.outputArea["state"] = "normal"
+                        self.outputArea.appendText(searchName + "'s email is " + AddressBook.contactDict[k])
+                        self.nameSearch.setText("")
+                        return
+                self.outputArea["state"] = "normal"
+                self.outputArea.appendText("Name not found.")
+        except OSError:
             self.outputArea.appendText("Name not found.")
+            
 
     def addAddress(self):
         newName = self.addName.getText()
