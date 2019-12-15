@@ -5,12 +5,27 @@ Date: 12/10/2019
 Filename: name_search_weinstein.py
 
 Pseudocode:
+1. Import EasyFrame from breezypythongui
+2. Create NameSearch class as subclass of EasyFrame
+3. Set up window and widgets in __init__ constructor method
+4. Definie search method to search through lists if anything is typed in search text field
+5. If boyname search text field is not blank
+    5a. Open BoyNames.txt
+    5b. Create list of all names in document
+    5c. Loop through list of names until we have a match and print desired output
+    5d. If no match, print desired output
+6. If girlname search text field is not blank
+    6a. Open GirlNames.txt
+    6b. Create list of all names in document
+    6c. Loop through list of names until we have a match and print desired output
+    6d. If no match, print desired output
 """
 from breezypythongui import EasyFrame
 
 class NameSearch(EasyFrame):
     """A name search for boy and girl names, to check if they are in the most popular 200 names in the US"""
 
+    # Sets up window with proper labels, buttons, and textfields/textareas
     def __init__(self):
         """Set up window and widgets"""
         EasyFrame.__init__(self, "Name Search")
@@ -23,10 +38,13 @@ class NameSearch(EasyFrame):
 
     def search(self):
         """Searches lists if anything is typed in search text areas."""
+
+        # Resets output area to blank. Gets text from textfield and creates a variable
         self.outputArea.setText("")
         boyName = self.boyName.getText()
         girlName = self.girlName.getText()
 
+        # If boyName is not blank, open file, create a list, and loop through list checking for boyName, print desired output
         if boyName != "":
             boyNames = open("./BoyNames.txt", 'r')
             boyList = boyNames.read().splitlines()
@@ -41,6 +59,7 @@ class NameSearch(EasyFrame):
                 if count >= len(boyList):
                     self.outputArea.appendText(boyName + " is not one of the most popular boy's names." + "\n")
 
+        # If girlName is not blank, open file, create a list, and loop through list checking for girlName, print desired output
         if girlName != "":
             girlNames = open("./Girlnames.txt", 'r')
             girlList = girlNames.read().splitlines()
