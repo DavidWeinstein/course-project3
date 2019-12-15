@@ -5,13 +5,19 @@ Date: 12/11/2019
 Filename: name_and_email_address_weinstein.py
 
 Pseudocode:
+1. From breezypythongui import EasyFrame
+2. Import pickle
+3. Create new class AddresBook as a subclass of EasyFrame
+4. Set up class dictionary as empty dictionary if first time opening program.
+5. Set up __init__ constructor method with appropriate buttons, labels, and textfields and textarea
+
 """
 from breezypythongui import EasyFrame
 import pickle
 
 class AddressBook(EasyFrame):
     """Address book for email addresses. Options to look up, add, edit, and delete email addresses from contacts."""
-    #set up dictionary and class variables for pickle.
+    #set up class dictionary
     contactDict = {}
 
     def __init__(self):
@@ -35,9 +41,9 @@ class AddressBook(EasyFrame):
         self.nameToDelete = self.addTextField(text="", row=3, column=2)
         self.saveAndQuit = self.addButton(text="Save and Quit", row=4, column=0, command=self.save)
         self.outputArea = self.addTextArea(text="", row=5, column=0, columnspan=5, height=10)
-        self.test = self.addButton(text="test", row=4, column=1, command=self.testing)
 
     def search(self):
+        """Searches through current contacts for their email"""
         searchName = self.nameSearch.getText()
         self.outputArea.setText("")
         try:
@@ -47,13 +53,15 @@ class AddressBook(EasyFrame):
                 for k in AddressBook.contactDict:
                     if searchName == k:
                         self.outputArea["state"] = "normal"
-                        self.outputArea.appendText(searchName + "'s email is " + AddressBook.contactDict[k])
+                        self.outputArea.appendText("Name: " + searchName + "\n" "Email: " + AddressBook.contactDict[k])
                         self.nameSearch.setText("")
                         return
                 self.outputArea["state"] = "normal"
-                self.outputArea.appendText("Name not found.")
+                self.outputArea.appendText("The specified name was not found.")
+                self.nameSearch.setText("")
         except OSError:
-            self.outputArea.appendText("Name not found.")
+            self.outputArea.appendText("The specified name was not found.")
+            self.nameSearch.setText("")
             
 
     def addAddress(self):
@@ -66,7 +74,7 @@ class AddressBook(EasyFrame):
             pickle.dump(AddressBook.contactDict, pickleOut)
             pickleOut.close()
             self.outputArea["state"] = "normal"
-            self.outputArea.appendText("Contact added!")
+            self.outputArea.appendText("Name and address have been added.")
             self.addName.setText("")
             self.addEmail.setText("")
         else:
@@ -77,19 +85,27 @@ class AddressBook(EasyFrame):
         emailEdit = self.newEmail.getText()
         self.outputArea.setText("")
         if name != "" and emailEdit != "":
+            pickleIn = open("emails.dat", "rb")
+            AddressBook.contactDict = pickle.load(pickleIn)
             for k in AddressBook.contactDict:
                 if name == k:
                     AddressBook.contactDict[k] = emailEdit
-                    self.outputArea.appendText("Contact updated")
+                    self.outputArea.appendText("Information updated.")
                     pickleOut = open("emails.dat", "wb")
                     pickle.dump(AddressBook.contactDict, pickleOut)
                     pickleOut.close()
+                    self.nameToEdit.setText("")
+                    self.newEmail.setText("")
                     return
-            self.outputArea.appendText("Name not found.")
+            self.outputArea.appendText("The specified name was not found.")
+            self.nameToEdit.setText("")
+            self.newEmail.setText("")
 
     def deleteAddress(self):
         delete = self.nameToDelete.getText()
         self.outputArea.setText("")
+        pickleIn = open("emails.dat", "rb")
+        AddressBook.contactDict = pickle.load(pickleIn)
         if delete != "":
             for k in AddressBook.contactDict:
                 if delete == k:
@@ -97,22 +113,16 @@ class AddressBook(EasyFrame):
                     pickleOut = open("emails.dat", "wb")
                     pickle.dump(AddressBook.contactDict, pickleOut)
                     pickleOut.close()
-                    self.outputArea.appendText("Contact deleted.")
+                    self.outputArea.appendText("Information deleted.")
+                    self.nameToDelete.setText("")
                     return
-            self.outputArea.appendText("Name not found.")
+            self.outputArea.appendText("The specified name was not found.")
 
     def save(self):
         pickleOut = open("emails.dat", "wb")
         pickle.dump(AddressBook.contactDict, pickleOut)
         pickleOut.close()
         self.quit()
-
-    def testing(self):
-        pickleIn = open("emails.dat", "rb")
-        AddressBook.contactDict = pickle.load(pickleIn)
-        self.outputArea["state"] = "normal"
-        self.outputArea.appendText(AddressBook.contactDict)
-
 
 def main():
     AddressBook().mainloop()
