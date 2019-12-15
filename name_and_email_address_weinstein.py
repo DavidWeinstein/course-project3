@@ -10,7 +10,21 @@ Pseudocode:
 3. Create new class AddresBook as a subclass of EasyFrame
 4. Set up class dictionary as empty dictionary if first time opening program.
 5. Set up __init__ constructor method with appropriate buttons, labels, and textfields and textarea
-
+6. Define search button function.
+    6a. If text field not blank search through dictionary
+    6b. Output name and email if found.
+    6c. Output "name not found" if not in dictionary
+7. Define add contact button function.
+    7a. If name and email text fields are not blank, create key value pair in dictionary
+8. Define edit contact button function.
+    8a. If name and email text fields are not blank, search dictionary for name
+    8b. If name is found in dictionary, edit email and update dictionary
+    8c. If name is not found output "name not found"
+9. Define delete contact button function.
+    9a.If name text field is not blank, search dictionary for name
+    9b. If name is found, delete name and email from dictionary and update dictionary
+10. Define save and quit button function.
+    10a. Updates file with most up to date dictionary and saves file, and exits the program
 """
 from breezypythongui import EasyFrame
 import pickle
@@ -44,9 +58,13 @@ class AddressBook(EasyFrame):
 
     def search(self):
         """Searches through current contacts for their email"""
+        # Grabs name search text and creates a variable. Resets ouput area
         searchName = self.nameSearch.getText()
         self.outputArea.setText("")
+
+        # try/except for error if searching for a contact with no dictionary yet created.
         try:
+            # if search name not blank, open up to date dictionary with pickle, search through dictionary, print desired output
             if searchName != "":
                 pickleIn = open("emails.dat", "rb")
                 AddressBook.contactDict = pickle.load(pickleIn)
@@ -65,9 +83,13 @@ class AddressBook(EasyFrame):
             
 
     def addAddress(self):
+        """Adds new email address and name to dictionary"""
+
+        # gets text from addName and addEmail text field and create variable, reset output area.
         newName = self.addName.getText()
         newEmail = self.addEmail.getText()
         self.outputArea.setText("")
+        # if name and email not blank create new key value pair and save to file with pickle, print desired output.
         if newName != "" and newEmail != "":
             AddressBook.contactDict[newName] = newEmail
             pickleOut = open("emails.dat", "wb")
@@ -81,12 +103,17 @@ class AddressBook(EasyFrame):
             self.outputArea.appendText("Provide neccessary info.")
             
     def editAddress(self):
+        """Edits existing address in dictionary."""
+
+        # gets text from nameToEdit and newEmail and creates variable, resets output area
         name = self.nameToEdit.getText()
         emailEdit = self.newEmail.getText()
         self.outputArea.setText("")
+        # if name and emailEdit not blank, load updated file with pickle
         if name != "" and emailEdit != "":
             pickleIn = open("emails.dat", "rb")
             AddressBook.contactDict = pickle.load(pickleIn)
+            # search if name is in dictionary, update email address, save new info to file with pickle, print desired output
             for k in AddressBook.contactDict:
                 if name == k:
                     AddressBook.contactDict[k] = emailEdit
@@ -102,10 +129,15 @@ class AddressBook(EasyFrame):
             self.newEmail.setText("")
 
     def deleteAddress(self):
+        """Deletes an existing address in dictionary."""
+
+        # get text from nameToDelete and create variable, reset output area, open and load updated file with pickle
         delete = self.nameToDelete.getText()
         self.outputArea.setText("")
         pickleIn = open("emails.dat", "rb")
         AddressBook.contactDict = pickle.load(pickleIn)
+
+        # if delete not blank, search if name is in dictionary and delete if it is, save updated file with pickle, print desired output
         if delete != "":
             for k in AddressBook.contactDict:
                 if delete == k:
@@ -119,6 +151,9 @@ class AddressBook(EasyFrame):
             self.outputArea.appendText("The specified name was not found.")
 
     def save(self):
+        """Saves and quits the program."""
+
+        # open file and save up to date dictionary to file and close with pickle.
         pickleOut = open("emails.dat", "wb")
         pickle.dump(AddressBook.contactDict, pickleOut)
         pickleOut.close()
